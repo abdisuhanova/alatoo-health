@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: health
+        image: vaheye/hci:latest
+        ports:
+          - containerPort: 8080
+        env:
+          - name: PGHOST
+            value: "10.106.245.109"
+          - name: PGUSER
+            value: admin
+          - name: PGPASSWORD
+            value: healthy
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+spec:
+  type: NodePort
+  selector:
+    app: myapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 30000  
